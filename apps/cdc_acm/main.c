@@ -337,7 +337,11 @@ int8_t app_send_break_callback(uint8_t interface, uint16_t duration)
 
 
 #ifdef _PIC14E
+#if __XC8_VERSION >= 2000
+void __interrupt() isr()
+#else
 void interrupt isr()
+#endif
 {
 	usb_service();
 }

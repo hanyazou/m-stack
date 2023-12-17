@@ -158,11 +158,19 @@ struct buffer_descriptor {
 #if defined __XC8
 	#define memcpy_from_rom(x,y,z) memcpy(x,y,z)
 	#define FAR
-	#define BD_ATTR_TAG @##BD_ADDR
-	#ifdef BUFFER_ADDR
-		#define XC8_BUFFER_ADDR_TAG @##BUFFER_ADDR
+	#if __XC8_VERSION >= 2000
+	  // XC8 discontinued the @addr notation and replaced it with __at()
+	  #define AT_ADDR(X) __at(X)
 	#else
-		#define XC8_BUFFER_ADDR_TAG
+	  #define AT_ADDR(X) @X
+	#endif
+
+	#define BD_ATTR_TAG AT_ADDR(BD_ADDR)
+
+	#ifdef BUFFER_ADDR
+	  #define XC8_BUFFER_ADDR_TAG AT_ADDR(BUFFER_ADDR)
+	#else
+	  #define XC8_BUFFER_ADDR_TAG
 	#endif
 #endif
 
