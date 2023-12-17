@@ -28,18 +28,24 @@
    BOTH IN and OUT endpoints for endpoint numbers (besides zero) up to the
    value specified.  For example, setting NUM_ENDPOINT_NUMBERS to 2 will
    activate endpoints EP 1 IN, EP 1 OUT, EP 2 IN, EP 2 OUT.  */
-#define NUM_ENDPOINT_NUMBERS 2
+#define NUM_ENDPOINT_NUMBERS 4
 
 /* Only 8, 16, 32 and 64 are supported for endpoint zero length. */
 #define EP_0_LEN 8
 
 #define EP_1_OUT_LEN 1
 #define EP_1_IN_LEN 10 /* May need to be longer, depending
-                        * on the notifications you support. */
+			* on the notifications you support. */
  /* The code in the demo app assumes that EP2 IN and OUT are the same length */
 #define EP_2_LEN 64
 #define EP_2_OUT_LEN EP_2_LEN
 #define EP_2_IN_LEN EP_2_LEN
+
+#define EP_3_OUT_LEN 1
+#define EP_3_IN_LEN 10
+#define EP_4_LEN 64
+#define EP_4_OUT_LEN EP_4_LEN
+#define EP_4_IN_LEN EP_4_LEN
 
 #define NUMBER_OF_CONFIGURATIONS 1
 

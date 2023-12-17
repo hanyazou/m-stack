@@ -78,6 +78,24 @@ int main(void)
 			usb_send_in_buffer(2, i);
 		}
 
+		/* Send data to the PC (CDC 2) */
+		if (usb_is_configured() &&
+		    !usb_in_endpoint_halted(4) &&
+		    !usb_in_endpoint_busy(4) && send) {
+
+			int i;
+			unsigned char *buf = usb_get_in_buffer(4);
+
+			for (i = 0; i < 16; i++) {
+				buf[i] = char_to_send++;
+				if (char_to_send > 'Z')
+					char_to_send = 'A';
+			}
+			buf[i++] = '\r';
+			buf[i++] = '\n';
+			usb_send_in_buffer(4, i);
+		}
+
 		/* Handle data received from the host */
 		if (usb_is_configured() &&
 		    !usb_out_endpoint_halted(2) &&

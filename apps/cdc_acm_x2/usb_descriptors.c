@@ -71,6 +71,19 @@ struct configuration_1_packet {
 	struct endpoint_descriptor       data_ep_in;
 	struct endpoint_descriptor       data_ep_out;
 
+	struct interface_association_descriptor iad2;
+
+	/* CDC Class Interface */
+	struct interface_descriptor      cdc_class_interface2;
+	struct cdc_functional_descriptor_header cdc_func_header2;
+	struct cdc_acm_functional_descriptor cdc_acm2;
+	struct cdc_union_functional_descriptor cdc_union2;
+	struct endpoint_descriptor       cdc_ep2;
+
+	/* CDC Data Interface */
+	struct interface_descriptor      cdc_data_interface2;
+	struct endpoint_descriptor       data_ep2_in;
+	struct endpoint_descriptor       data_ep2_out;
 };
 
 
@@ -88,7 +101,7 @@ const ROMPTR struct device_descriptor this_device_descriptor =
 	0x0200, // 0x0200 = USB 2.0, 0x0110 = USB 1.1
 	DEVICE_CLASS_MISC, // Device class
 	0x02, /* Device Subclass. See the document entitled: "USB Interface
-	         Association Descriptor Device Class Code and Use Model" */
+		 Association Descriptor Device Class Code and Use Model" */
 	0x01, // Protocol. See document referenced above.
 	EP_0_LEN, // bMaxPacketSize0
 	0xA0A0, // Vendor
@@ -116,7 +129,7 @@ static const ROMPTR struct configuration_1_packet configuration_1 =
 	sizeof(struct configuration_descriptor),
 	DESC_CONFIGURATION,
 	sizeof(configuration_1), // wTotalLength (length of the whole packet)
-	2, // bNumInterfaces
+	4, // bNumInterfaces
 	1, // bConfigurationValue
 	2, // iConfiguration (index of string descriptor)
 	0b10000000,
@@ -217,6 +230,103 @@ static const ROMPTR struct configuration_1_packet configuration_1 =
 	0x02 /*| 0x00*/, // endpoint #2 0x00=OUT
 	EP_BULK, // bmAttributes
 	EP_2_OUT_LEN, // wMaxPacketSize
+	1, // bInterval in ms.
+	},
+
+	/* Interface Association Descriptor 2 */
+	{
+	sizeof(struct interface_association_descriptor),
+	DESC_INTERFACE_ASSOCIATION,
+	2, /* bFirstInterface */
+	2, /* bInterfaceCount */
+	CDC_COMMUNICATION_INTERFACE_CLASS,
+	CDC_COMMUNICATION_INTERFACE_CLASS_ACM_SUBCLASS,
+	0, /* bFunctionProtocol */
+	2, /* iFunction (string descriptor index) */
+	},
+
+	/* CDC Class Interface 2 */
+	{
+	// Members from struct interface_descriptor
+	sizeof(struct interface_descriptor), // bLength;
+	DESC_INTERFACE,
+	0x2, // InterfaceNumber
+	0x0, // AlternateSetting
+	0x1, // bNumEndpoints
+	CDC_COMMUNICATION_INTERFACE_CLASS, // bInterfaceClass
+	CDC_COMMUNICATION_INTERFACE_CLASS_ACM_SUBCLASS, // bInterfaceSubclass
+	0x00, // bInterfaceProtocol
+	0x03, // iInterface (index of string describing interface)
+	},
+
+	/* CDC Functional Descriptor Header 2 */
+	{
+	sizeof(struct cdc_functional_descriptor_header),
+	DESC_CS_INTERFACE,
+	CDC_FUNCTIONAL_DESCRIPTOR_SUBTYPE_HEADER,
+	0x0110, /* bcdCDC (version in BCD) */
+	},
+
+	/* CDC ACM Functional Descriptor 2 */
+	{
+	sizeof(struct cdc_acm_functional_descriptor),
+	DESC_CS_INTERFACE,
+	CDC_FUNCTIONAL_DESCRIPTOR_SUBTYPE_ACM,
+	/* bmCapabilities: Make sure to keep in sync with the actual
+	 * capabilities (ie: which callbacks are defined). */
+	CDC_ACM_CAPABILITY_LINE_CODINGS | CDC_ACM_CAPABILITY_SEND_BREAK,
+	},
+
+	/* CDC Union Functional Descriptor 2 */
+	{
+	sizeof (struct cdc_union_functional_descriptor),
+	DESC_CS_INTERFACE,
+	CDC_FUNCTIONAL_DESCRIPTOR_SUBTYPE_UNION,
+	0, /* bMasterInterface */
+	1, /* bSlaveInterface0 */
+	},
+
+	/* CDC ACM Notification Endpoint (Endpoint 1 IN) 2 */
+	{
+	sizeof(struct endpoint_descriptor),
+	DESC_ENDPOINT,
+	0x03 | 0x80, // endpoint #1 0x80=IN
+	EP_INTERRUPT, // bmAttributes
+	EP_3_IN_LEN, // wMaxPacketSize
+	1, // bInterval in ms.
+	},
+
+	/* CDC Data Interface 2 */
+	{
+	// Members from struct interface_descriptor
+	sizeof(struct interface_descriptor), // bLength;
+	DESC_INTERFACE,
+	0x3, // InterfaceNumber
+	0x0, // AlternateSetting
+	0x2, // bNumEndpoints
+	CDC_DATA_INTERFACE_CLASS, // bInterfaceClass
+	0, // bInterfaceSubclass (no subclass)
+	CDC_DATA_INTERFACE_CLASS_PROTOCOL_NONE, // bInterfaceProtocol
+	0x04, // iInterface (index of string describing interface)
+	},
+
+	/* CDC Data IN Endpoint 2 */
+	{
+	sizeof(struct endpoint_descriptor),
+	DESC_ENDPOINT,
+	0x04 | 0x80, // endpoint #2 0x80=IN
+	EP_BULK, // bmAttributes
+	EP_4_IN_LEN, // wMaxPacketSize
+	1, // bInterval in ms.
+	},
+
+	/* CDC Data OUT Endpoint 2 */
+	{
+	sizeof(struct endpoint_descriptor),
+	DESC_ENDPOINT,
+	0x04 /*| 0x00*/, // endpoint #2 0x00=OUT
+	EP_BULK, // bmAttributes
+	EP_4_OUT_LEN, // wMaxPacketSize
 	1, // bInterval in ms.
 	},
 };
